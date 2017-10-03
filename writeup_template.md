@@ -20,6 +20,20 @@ The goals / steps of this project are the following:
 [//]: # (Image References)
 
 [imageA]: ./writeup_images/1.PNG "Code"
+[imageB]: ./writeup_images/2.PNG "Code"
+[image2B]: ./writeup_images/2B.PNG "Code"
+[imageC]: ./writeup_images/3.PNG "Code"
+[imageD]: ./writeup_images/4.PNG "Code"
+[imageE]: ./writeup_images/5.PNG "Code"
+[imageF]: ./writeup_images/6.PNG "Code"
+[imageG]: ./writeup_images/7.PNG "Code"
+[imageH]: ./writeup_images/8.PNG "Code"
+[imageI]: ./writeup_images/9.PNG "Code"
+[imageJ]: ./writeup_images/10.PNG "Code"
+[imageK]: ./writeup_images/11.PNG "Code"
+[imageL]: ./writeup_images/12.PNG "Code"
+[imageM]: ./writeup_images/13.PNG "Code"
+[imageN]: ./writeup_images/14.PNG "Code"
 [image1]: ./examples/undistort_output.png "Undistorted"
 [image2]: ./test_images/test1.jpg "Road Transformed"
 [image3]: ./examples/binary_combo_example.jpg "Binary Example"
@@ -78,55 +92,89 @@ The final result of distortion correction is:
 
 #### 2. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
 
-I used a combination of color and gradient thresholds to generate a binary image (thresholding steps at lines # through # in `another_file.py`).  Here's an example of my output for this step.  (note: this is not actually from one of the test images)
+A number of color space transformations, gradients, and tresholds were used in the final pipeline. 
 
-![alt text][image3]
+![alt text][imageD]
+![alt text][imageE]
+
+
+Colorspace changes from BGR to RGB, to HSV, to grayscal, were all used to pick out particlar features of the image.
+Gradients were also used to help isolate lines tending in particular directions. Below we see the sobel operator. 
+![alt text][imageF]
 
 #### 3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
 
-The code for my perspective transform includes a function called `warper()`, which appears in lines 1 through 8 in the file `example.py` (output_images/examples/example.py) (or, for example, in the 3rd code cell of the IPython notebook).  The `warper()` function takes as inputs an image (`img`), as well as source (`src`) and destination (`dst`) points.  I chose the hardcode the source and destination points in the following manner:
+The perspective transform makes use of the following cv2 function:
+
+```
+    M = cv2.getPerspectiveTransform(src, dst)
+    Minv = cv2.getPerspectiveTransform(dst, src)
+    # use cv2.warpPerspective() to warp your image to a top-down view
+    warped = cv2.warpPerspective(img, M, (w,h), flags=cv2.INTER_LINEAR)
+```
+
+Where the source and destination points were defined as follows:
 
 ```python
-src = np.float32(
-    [[(img_size[0] / 2) - 55, img_size[1] / 2 + 100],
-    [((img_size[0] / 6) - 10), img_size[1]],
-    [(img_size[0] * 5 / 6) + 60, img_size[1]],
-    [(img_size[0] / 2 + 55), img_size[1] / 2 + 100]])
-dst = np.float32(
-    [[(img_size[0] / 4), 0],
-    [(img_size[0] / 4), img_size[1]],
-    [(img_size[0] * 3 / 4), img_size[1]],
-    [(img_size[0] * 3 / 4), 0]])
+    # define source and destination points for transform
+    src = np.float32([(575,464),
+                      (707,464), 
+                      (258,682), 
+                      (1049,682)])
+    dst = np.float32([(450,0),
+                      (w-450,0),
+                      (450,h),
+                      (w-450,h)])
 ```
 
 This resulted in the following source and destination points:
 
 | Source        | Destination   | 
 |:-------------:|:-------------:| 
-| 585, 460      | 320, 0        | 
-| 203, 720      | 320, 720      |
-| 1127, 720     | 960, 720      |
-| 695, 460      | 960, 0        |
+| 575, 464      | 450, 0        | 
+| 707, 464      | w-450, 0      |
+| 258, 682     | 450, h      |
+| 1049, 682      | w-450, h        |
+
+![alt text][imageG]
 
 I verified that my perspective transform was working as expected by drawing the `src` and `dst` points onto a test image and its warped counterpart to verify that the lines appear parallel in the warped image.
 
-![alt text][image4]
+![alt text][imageH]
 
 #### 4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
+To detect lane line, eac h image was ran through a pipleline of multiple thresholding. 
 
-Then I did some other stuff and fit my lane lines with a 2nd order polynomial kinda like this:
+The final pipeline is a combination of HSV, HSL, RGB, and Solbel direction and magnitute tresholding until reasonable lane
+lines could be detected. The below shows the dectection of the lane lines. The code is showsn in CELL 21 of the Iphython notebook. 
 
-![alt text][image5]
+![alt text][imageI]
+
+I used the sliding window approach to detect lane lines. This method uses the histogram of the image as an initial 
+starting point to determine where the most probable lines could be. Below is a histogram of the image, coupled with the 
+sliding windows
+
+![alt text][imageJ]
+
+A second order polynomial is used to fit to the curve as shown below:
+![alt text][imageK]
+
 
 #### 5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
 
-I did this in lines # through # in my code in `my_other_file.py`
+The below code shows how I calculate the radius of curvature, with an assumed x and y meter per pixel. 
+
+![alt text][imageL]
+
+
 
 #### 6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
 
-I implemented this step in lines # through # in my code in `yet_another_file.py` in the function `map_lane()`.  Here is an example of my result on a test image:
+The image is overlayed with the poly lines and text showing the curvature and distance from center, then the image is 
+warped backed from a topDownView to the orignal view using the inverse tranformation matrix MinV calculated
+during the initial warp transformation. 
 
-![alt text][image6]
+![alt text][imageM]
 
 ---
 
@@ -142,4 +190,10 @@ Here's a [link to my video result](./project_video.mp4)
 
 #### 1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
 
-Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
+The pipeline struggled a bit with shadows as was common from the previous projects, although not as bad as bedfore. 
+The tresholding parameters were found via hand tuning. I am curious is an approach that makes uses of different an
+automated approch like using lease squares error to minimize a function to yield the best thresholded values. 
+
+But I believe having more thresholdings for unique conditions will help yield better results, however this was 
+notopted due to the limited resources of my personal computer and the amount of compute time required for each operation 
+to be performed. Overall the results were very impressive for a few lines of python code. 
