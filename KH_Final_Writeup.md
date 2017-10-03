@@ -22,7 +22,7 @@ The goals / steps of this project are the following:
 
 Here is the final result of this project, below I describe how these results were obtained
 
-![alt text]("writeup_images/ezgif.com-video-to-gif.gif")
+![alt text](writeup_images/ezgif.com-video-to-gif.gif)
 
 [//]: # (Image References)
 
