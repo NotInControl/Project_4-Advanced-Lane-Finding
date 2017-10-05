@@ -41,6 +41,8 @@ Here is the final result of this project, below I describe how these results wer
 [imageL]: ./writeup_images/12.PNG "Code"
 [imageM]: ./writeup_images/13.PNG "Code"
 [imageN]: ./writeup_images/14.PNG "Code"
+[imageO]: ./writeup_images/15.PNG "Code"
+[imageP]: ./writeup_images/16.PNG "Code"
 [image1]: ./examples/undistort_output.png "Undistorted"
 [image2]: ./test_images/test1.jpg "Road Transformed"
 [image3]: ./examples/binary_combo_example.jpg "Binary Example"
@@ -204,3 +206,13 @@ automated approch like using lease squares error to minimize a function to yield
 But I believe having more thresholdings for unique conditions will help yield better results, however this was 
 notopted due to the limited resources of my personal computer and the amount of compute time required for each operation 
 to be performed. Overall the results were very impressive for a few lines of python code. 
+
+
+## Update After Mentor Insight
+
+The mentor provided very useful information with regards to using the L channel of HLS and the B channel of LAB to detect the yellow and white lines. A new pipeline was added based on the recommendations to help correct errors with detecting lines in heavy shadows.
+
+In addition, if a lane is not detected, the previous fir line is used. The new pipeline is shown below, and the results shows that the entire video lane is detected very accurately. 
+
+![alt text][imageN]
+![alt text][imageO]
